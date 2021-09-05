@@ -6,61 +6,75 @@
  * Time: 10:14
  */
 
+namespace Snubes\CodeChallenge;
+
+use Snubes\CodeChallenge\CacheService\AbstractCachingSystem;
+use Snubes\CodeChallenge\CacheService\CachingSystem\Exception\UnsupportedCacheMethodException;
+use Snubes\CodeChallenge\CacheService\CachingSystemFactory;
+use Snubes\CodeChallenge\CacheService\PushCacheInterface;
+
 class CacheManager
 {
+    /**
+     * @var AbstractCachingSystem
+     */
     private $cache;
 
-    public function setCache(string $cachingSystem)
+    /**
+     * @param string $cachingSystem
+     * @throws \Exception
+     */
+    public function setCache(string $cachingSystem):void
     {
-
-        switch ($cachingSystem){
-
-            case "redis":
-                $this->cache=new \Redis();
-                break;
-            case "memcache":
-                $this->cache=new \Memcache();
-                break;
-            default:
-                throw new \Exception("Cache Manager Not Found");
-
-        }
-
+        $this->cache = CachingSystemFactory::build($cachingSystem);
     }
 
-    public function connect(string $host, string $port){
-
+    /**
+     * @param string $host
+     * @param string $port
+     */
+    public function connect(string $host, string $port):void
+    {
         $this->cache->connect($host,$port);
-
     }
 
-    public function set(string $key, string $value, string $is_compressed=null, string $ttl=null){
-
-        if($this->cache instanceof \Memcache)
-            $this->cache->set($key,$value,$is_compressed,$ttl);
-        else if($this->cache instanceof \Redis)
-            $this->cache->set($key,$value,$ttl);
+    /**
+     * @param string $key
+     * @param string $value
+     * @param string|null $is_compressed
+     * @param string|null $ttl
+     */
+    public function set(string $key, string $value, string $is_compressed=null, string $ttl=null):void
+    {
+        $this->cache->set($key,$value,$is_compressed,$ttl);
     }
 
-    public function get(string $key){
-
+    /**
+     * @param string $key
+     * @return mixed
+     */
+    public function get(string $key)
+    {
         return $this->cache->get($key);
     }
 
-    public function lpush(string $key, string $value){
+    /**
+     * @param string $key
+     * @param string $value
+     * @throws \Exception
+     */
+    public function lpush(string $key, string $value)
+    {
+        if (!$this->cache instanceof PushCacheInterface){
+            throw new UnsupportedCacheMethodException();
+        }
 
-        if($this->cache instanceof \Memcache)
-            throw new \Exception("method not supported");
-        else if($this->cache instanceof \Redis)
-            $this->cache->lPush($key,$value);
-
+        $this->cache->lPush($key,$value);
     }
-
 
 }
 
 $cm=new CacheManager();
-
 $cm->setCache('redis');
 $cm->connect('somehost','121');
 $cm->set('one','1');
@@ -73,5 +87,3 @@ $cm->connect('somehost','121');
 $cm->set('one','1');
 $cm->lpush('two','2'); // generates exception
 echo $cm->get('one');
-
-
