@@ -73,5 +73,3 @@ $cm->connect('somehost','121');
 $cm->set('one','1');
 $cm->lpush('two','2'); // generates exception
 echo $cm->get('one');
-
-
