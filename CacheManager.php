@@ -15,23 +15,21 @@ class CacheManager
 
 $cmRedis = new Redis();
 
-$cm->setCache('redis');
-$cm->connect('somehost', '121');
-$cm->set('one', '1');
-$cm->lpush('two', '1');
-$cm->lpush('two', '2');
-echo $cm->get('one');
+$cmRedis->connect('somehost', '121');
+$cmRedis->set('one', '1');
+$cmRedis->lpush('two', '1');
+$cmRedis->lpush('two', '2');
+echo $cmRedis->get('one');
 
 $cmMemcache = new Memcache();
 
-$cm->setCache('memcache');
-$cm->connect('somehost', '121');
-$cm->set('one', '1');
+$cmMemcache->connect('somehost', '121');
+$cmMemcache->set('one', '1');
 try {
-    $cm->lpush('two', '2'); // generates exception
+    $cmMemcache->lpush('two', '2'); // generates exception
 } catch (Exception $e) {
     echo $e->messages;
 }
 
-echo $cm->get('one');
+echo $cmMemcache->get('one');
 

@@ -1,4 +1,9 @@
 <?php
+/**
+ * User: Essam
+ * Date: 03.10.21
+ * Time: 1:14
+ */
 class Redis implements CacheInterface
 {
   private $cache;
