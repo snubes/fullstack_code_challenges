@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: isnain
- * Date: 09.08.21
- * Time: 10:14
- */
 
 class CacheManager
 {
@@ -12,7 +6,6 @@ class CacheManager
 
     public function setCache(string $cachingSystem)
     {
-
         switch ($cachingSystem){
 
             case "redis":
@@ -29,22 +22,46 @@ class CacheManager
     }
 
     public function connect(string $host, string $port){
+        try {
 
-        $this->cache->connect($host,$port);
-
+            $this->cache->connect($host,$port);
+        } catch (\Exception $e) {
+             //throw $e;
+             echo 'Message: ' .$e->getMessage();
+        }
     }
 
     public function set(string $key, string $value, string $is_compressed=null, string $ttl=null){
-
+        
         if($this->cache instanceof \Memcache)
-            $this->cache->set($key,$value,$is_compressed,$ttl);
+            try {
+                $this->cache->set($key,$value,$is_compressed,$ttl);
+            } catch (\Exception $e) {
+                //throw $e;
+                echo 'Message: ' .$e->getMessage();
+            }
+            
         else if($this->cache instanceof \Redis)
-            $this->cache->set($key,$value,$ttl);
+            try {
+                //code...
+                $this->cache->set($key,$value,$ttl);
+            } catch (\Exception $e) {
+                //throw $e;
+                echo 'Message: ' .$e->getMessage();
+            }
+           
     }
 
     public function get(string $key){
 
-        return $this->cache->get($key);
+        try {
+            //code...
+            return $this->cache->get($key);
+
+        } catch (\Exception $e) {
+            //throw $e;
+            echo 'Message: ' .$e->getMessage();
+        }
     }
 
     public function lpush(string $key, string $value){
@@ -52,26 +69,15 @@ class CacheManager
         if($this->cache instanceof \Memcache)
             throw new \Exception("method not supported");
         else if($this->cache instanceof \Redis)
-            $this->cache->lPush($key,$value);
+            try {
+                //code...
+                $this->cache->lPush($key,$value);
+            } catch (\Exception $e) {
+                //throw $e;
+                echo 'Message: ' .$e->getMessage();
+            }
 
     }
 
 
 }
-
-$cm=new CacheManager();
-
-$cm->setCache('redis');
-$cm->connect('somehost','121');
-$cm->set('one','1');
-$cm->lpush('two','1');
-$cm->lpush('two','2');
-echo $cm->get('one');
-
-$cm->setCache('memcache');
-$cm->connect('somehost','121');
-$cm->set('one','1');
-$cm->lpush('two','2'); // generates exception
-echo $cm->get('one');
-
-
