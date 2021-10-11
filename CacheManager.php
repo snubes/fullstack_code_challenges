@@ -1,77 +1,60 @@
 <?php
+
+use Snudes\Contracts\CacheInterface;
+use Snudes\Contracts\CacheItem;
+
 /**
- * Created by PhpStorm.
- * User: isnain
- * Date: 09.08.21
+ * Created by vscode.
+ * User: Ayoola Olojede
+ * Date: 11.10.21
  * Time: 10:14
  */
 
-class CacheManager
+class CacheManager implements CacheInterface
 {
     private $cache;
+    private static $instance;
 
-    public function setCache(string $cachingSystem)
+    public function __construct()
     {
+        self::$instance = $this;
+    }
 
-        switch ($cachingSystem){
-
-            case "redis":
-                $this->cache=new \Redis();
-                break;
-            case "memcache":
-                $this->cache=new \Memcache();
-                break;
-            default:
-                throw new \Exception("Cache Manager Not Found");
-
+    public static function getInstance()
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
         }
-
+        return self::$instance;
     }
 
-    public function connect(string $host, string $port){
-
-        $this->cache->connect($host,$port);
-
+    public function setCache(string $cachingSystem, CacheItem $cacheItem)
+    {
+        $this->setCache($cachingSystem, $cacheItem);
+        $this->cache = $cacheItem;
     }
 
-    public function set(string $key, string $value, string $is_compressed=null, string $ttl=null){
-
-        if($this->cache instanceof \Memcache)
-            $this->cache->set($key,$value,$is_compressed,$ttl);
-        else if($this->cache instanceof \Redis)
-            $this->cache->set($key,$value,$ttl);
+    protected function getRedisInstance()
+    {
+        return new Redis();
     }
 
-    public function get(string $key){
-
-        return $this->cache->get($key);
+    protected function getMemcacheInstance()
+    {
+        return new Memcache();
     }
-
-    public function lpush(string $key, string $value){
-
-        if($this->cache instanceof \Memcache)
-            throw new \Exception("method not supported");
-        else if($this->cache instanceof \Redis)
-            $this->cache->lPush($key,$value);
-
-    }
-
-
 }
 
-$cm=new CacheManager();
+$cacheManager = CacheManager::getInstance();
 
-$cm->setCache('redis');
-$cm->connect('somehost','121');
-$cm->set('one','1');
-$cm->lpush('two','1');
-$cm->lpush('two','2');
-echo $cm->get('one');
+$cacheManager->setCache('redis', new Redis());
+$redis = $cacheManager->getRedisInstance->connect('somehost', '121');
+$redis->set('one', '1');
+$redis->lpush('two', '1');
+$redis->lpush('two', '2');
+echo $redis->get('one');
 
-$cm->setCache('memcache');
-$cm->connect('somehost','121');
-$cm->set('one','1');
-$cm->lpush('two','2'); // generates exception
-echo $cm->get('one');
-
-
+$cacheManager->setCache('memcache', new Memcache());
+$memcache = $cacheManager->getMemcacheInstance->connect('somehost', '121');
+$memcache->set('one', '1');
+echo $memcache->get('one');
