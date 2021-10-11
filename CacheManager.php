@@ -12,7 +12,6 @@ use Snudes\Contracts\CacheItem;
 
 class CacheManager implements CacheInterface
 {
-    private $cache;
     private static $instance;
 
     public function __construct()
@@ -28,12 +27,6 @@ class CacheManager implements CacheInterface
         return self::$instance;
     }
 
-    public function setCache(string $cachingSystem, CacheItem $cacheItem)
-    {
-        $this->setCache($cachingSystem, $cacheItem);
-        $this->cache = $cacheItem;
-    }
-
     protected function getRedisInstance()
     {
         return new Redis();
@@ -44,17 +37,3 @@ class CacheManager implements CacheInterface
         return new Memcache();
     }
 }
-
-$cacheManager = CacheManager::getInstance();
-
-$cacheManager->setCache('redis', new Redis());
-$redis = $cacheManager->getRedisInstance->connect('somehost', '121');
-$redis->set('one', '1');
-$redis->lpush('two', '1');
-$redis->lpush('two', '2');
-echo $redis->get('one');
-
-$cacheManager->setCache('memcache', new Memcache());
-$memcache = $cacheManager->getMemcacheInstance->connect('somehost', '121');
-$memcache->set('one', '1');
-echo $memcache->get('one');
