@@ -5,9 +5,9 @@ use Snudes\Contracts\DbConnector;
 
 class Memcache implements DbConnector, CacheItem
 {
-    public function connect(string $host, string $port)
+    public function connect(string $driver, string $host, string $port)
     {
-        $this->connect($host, $port);
+        $this->connect($driver, $host, $port);
     }
 
     public function set(string $key, string $value, string $is_compressed = null, string $ttl = null)
