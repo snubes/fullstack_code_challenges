@@ -1,0 +1,9 @@
+{
+    "name": "rgjappl/snubes-cache_manager",
+    "autoload": {
+        "psr-4": {
+            "Snubes\\FullStackCodeChallenges\\CacheManagerChallenge\\": "src/"
+        }
+    },
+    "require": {}
+}
