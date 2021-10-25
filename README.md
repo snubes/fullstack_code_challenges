@@ -9,4 +9,4 @@ Please push your code in a different branch.
 -- comments from Mohamed
 
 * First we need to run `composer install` to install the dependencies and load classes
-* 
+* to run the code just run this command `php index.php`
