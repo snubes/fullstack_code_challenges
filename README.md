@@ -1,5 +1,5 @@
-# fullstack_code_challenges
+PHP version 8.1
 
-Identify the code smells in the CacheManager Implementation and rewrite CacheManager following all the best practices you know.
+Commands:
 
-Please push your code in a different branch. 
+composer dump-autoload -o
