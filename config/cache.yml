@@ -1,0 +1,10 @@
+cache:
+  # if we need a default ttl...
+  default_ttl: 600
+  redis:
+      host: somehost
+      port: 1234
+      ttl: 200
+  memcache:
+      host: somehost
+      port: 4567

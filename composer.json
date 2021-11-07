@@ -1,0 +1,25 @@
+{
+    "name": "dario/snubes",
+    "description": "Fullstack Challenge",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Dario\\Snubes\\": "src/",
+            "Cache\\": "src/Core/Cache",
+            "Cache\\Adapter\\": "src/Core/Cache/Adapter"
+        }
+    },
+    "authors": [
+        {
+            "name": "Dario Savella",
+            "email": "dario.savella@gmail.com"
+        }
+    ],
+    "require": {
+        "symfony/yaml": "^5.3",
+        "ext-zlib": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9"
+    }
+}
