@@ -3,6 +3,7 @@
 namespace Cache;
 
 use Cache\Adapter\AdapterInterface;
+use http\Exception;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -14,32 +15,23 @@ use Symfony\Component\Yaml\Yaml;
 abstract class ManagerAbstract implements ManagerInterface, ManagerPlainInterface
 {
     protected array $config = [];
-    protected ?AdapterInterface $adapter = null;
+    protected string $adapterName = '';
 
-    protected function getConfig(string $filepath = 'config/cache.yml')
+    protected function getConfig()
     {
-        if (empty($this->config)) {
-            $this->config = Yaml::parseFile($filepath);
+        if (empty($this->adapterName)) {
+            throw new \Exception('No cache adapter defined');
         }
+        $config = Yaml::parseFile(APP_ROOT.'/config/cache.yml');
+        if (isset($config['cache'][$this->adapterName])) {
+            $this->config = $config['cache'][$this->adapterName];
+            return;
+        }
+        throw new \Exception('No configuration found for cache adapter '. $this->adapterName);
     }
 
-    public function __construct(string $host, string $port, AdapterInterface $adapter = null) {
+    public function __construct() {
         $this->getConfig();
-        $this->setAdapter($adapter);
-        $this->adapter->connect($host,$port);
-    }
-
-    protected function setAdapter(?AdapterInterface $adapter = null) {
-        $this->adapter = $adapter;
-    }
-
-    public function set(string $key, string $value, int $ttl = 0): void
-    {
-        $this->adapter->set($key, $value, $ttl);
-    }
-
-    public function get(string $key){
-
-        return $this->adapter->get($key);
+        $this->connect();
     }
 }

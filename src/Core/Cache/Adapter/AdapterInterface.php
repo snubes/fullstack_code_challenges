@@ -10,7 +10,6 @@ namespace Cache\Adapter;
  */
 interface AdapterInterface
 {
-    function setAdapter();
     public function get(string $key);
-    public function connect(string $host, int $port);
+    public function connect(string $host, int $port): bool;
 }

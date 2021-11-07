@@ -8,10 +8,16 @@
 
 namespace Cache;
 
-use Cache\Adapter\AdapterInterface;
-
+/**
+ * We assume the Adapter will at least have these:
+ * @method set
+ * @method get
+ */
 interface ManagerInterface
 {
-    public function get(string $key);
-    public function connect(string $host, int $port);
+    /**
+     *
+     * @return bool
+     */
+    public function connect(): bool;
 }

@@ -15,13 +15,11 @@ class MyMemoryCache implements AdapterInterface, AdapterPlainInterface, AdapterC
     private string $host;
     private string $port;
 
-    public function setAdapter(?AdapterInterface $adapter = null)
-    {
-    }
-
-    public function connect(string $host, int $port) {
+    public function connect(string $host, int $port): bool {
         $this->host = $host;
         $this->port = $port;
+        // We are always successful of course !
+        return true;
     }
 
     public function set(string $key, string $value, int $ttl = 0): void

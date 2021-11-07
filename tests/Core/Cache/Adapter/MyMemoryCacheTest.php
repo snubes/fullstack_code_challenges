@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
+namespace Core\Cache\Adapter;
+
 use Cache\Adapter\AdapterInterface;
+use Cache\Adapter\MyMemoryCache;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -18,7 +21,7 @@ class MyMemoryCacheTest extends TestCase
     public function setUp(): void
     {
         $this->sut = self::getMockForAbstractClass(
-            Cache\Adapter\MyMemoryCache::class
+            MyMemoryCache::class
         );
     }
 

@@ -15,13 +15,9 @@ class AdapterAbstract extends MyMemoryCache implements AdapterInterface
     protected array $config;
     protected AdapterInterface $adapter;
 
-    protected function getConfig(string $filepath = 'config/cache.yml')
+    public function connect(string $host, int $port): bool
     {
-        $value = Yaml::parseFile($filepath);
-    }
-
-    public function connect(string $host, int $port) {
-        parent::connect($host, $port);
+        return parent::connect($host, $port);
     }
 
     public function set(string $key, string $value, int $ttl = 0): void

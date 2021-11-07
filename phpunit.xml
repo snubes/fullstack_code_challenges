@@ -6,6 +6,9 @@
         colors="true"
         bootstrap="vendor/autoload.php"
 >
+    <php>
+        <const name="APP_ROOT" value="." force="true" />
+    </php>
     <coverage processUncoveredFiles="true">
         <include>
             <directory suffix=".php">./src</directory>
