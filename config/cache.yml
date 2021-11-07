@@ -1,0 +1,10 @@
+cache:
+  default_ttl: 600
+  redis:
+      adapter: Cache\Adapter\Redis
+      host: somehost
+      port: someport
+      ttl: 200
+  memcache:
+      host: somehost
+      port: someport

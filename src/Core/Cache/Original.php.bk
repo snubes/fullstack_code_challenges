@@ -6,9 +6,13 @@
  * Time: 10:14
  */
 
-class CacheManager
+namespace Cache;
+
+use Cache\Adapter\AdapterInterface;
+
+abstract class CacheManager implements ManagerInterface
 {
-    private $cache;
+    protected AdapterInterface $adapter;
 
     public function setCache(string $cachingSystem)
     {
@@ -16,10 +20,10 @@ class CacheManager
         switch ($cachingSystem){
 
             case "redis":
-                $this->cache=new \Redis();
+                $this->adapter=new \Redis();
                 break;
             case "memcache":
-                $this->cache=new \Memcache();
+                $this->adapter=new \Memcache();
                 break;
             default:
                 throw new \Exception("Cache Manager Not Found");
@@ -30,29 +34,29 @@ class CacheManager
 
     public function connect(string $host, string $port){
 
-        $this->cache->connect($host,$port);
+        $this->adapter->connect($host,$port);
 
     }
 
     public function set(string $key, string $value, string $is_compressed=null, string $ttl=null){
 
-        if($this->cache instanceof \Memcache)
-            $this->cache->set($key,$value,$is_compressed,$ttl);
-        else if($this->cache instanceof \Redis)
-            $this->cache->set($key,$value,$ttl);
+        if($this->adapter instanceof \Memcache)
+            $this->adapter->set($key,$value,$is_compressed,$ttl);
+        else if($this->adapter instanceof \Redis)
+            $this->adapter->set($key,$value,$ttl);
     }
 
     public function get(string $key){
 
-        return $this->cache->get($key);
+        return $this->adapter->get($key);
     }
 
     public function lpush(string $key, string $value){
 
-        if($this->cache instanceof \Memcache)
+        if($this->adapter instanceof \Memcache)
             throw new \Exception("method not supported");
-        else if($this->cache instanceof \Redis)
-            $this->cache->lPush($key,$value);
+        else if($this->adapter instanceof \Redis)
+            $this->adapter->lPush($key,$value);
 
     }
 
