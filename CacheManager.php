@@ -1,77 +1,113 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: isnain
- * Date: 09.08.21
- * Time: 10:14
- */
 
 class CacheManager
 {
     private $cache;
-
-    public function setCache(string $cachingSystem)
+    
+    /**
+     * CacheManager constructor.
+     *
+     * @param string $driver
+     * 
+     * @param string $host
+     * 
+     * @param int $port
+     */
+    public function __construct( string $driver, string $host, int $port )
     {
+        $this->connect( $driver, $host, $port );
+    }
 
-        switch ($cachingSystem){
 
+    /**
+     * CacheManager constructor.
+     *  
+     * @param string  $driver
+     * 
+     * @param string  $host
+     * 
+     * @param int  $port
+     * 
+     * @return $this
+     */
+    protected function connect( string $driver, string $host, int $port )
+    {
+        switch ($driver){
             case "redis":
-                $this->cache=new \Redis();
+                $this->cache = new \Redis();
                 break;
+
             case "memcache":
-                $this->cache=new \Memcache();
+                $this->cache = new \Memcache();
                 break;
+
             default:
                 throw new \Exception("Cache Manager Not Found");
+        }
+        
+        $this->cache->connect($host, $port);
+        return $this;
+    }
 
+
+    /**
+     * Get cache data.
+     * 
+     * @param string $key
+     * 
+     * @return value
+     */
+    public function get( string $key )
+    {
+        return $this->cache->get($key);
+    }
+
+    
+    /**
+     * Set cache data.
+     * 
+     * @param string $key
+     * 
+     * @param string $value
+     * 
+     * @param int $ttl
+     * 
+     * @param bool $isCompressed
+     * 
+     * @return response
+     */
+    public function set(string $key, string $value, int $ttl = null, $isCompressed = null)
+    {
+
+        if ( $this->cache instanceof \Memcache ) {
+            return $this->cache->set($key, $value, $isCompressed, $ttl);
+        }
+
+        if ( $this->cache instanceof \Redis ) {
+            return $this->cache->set($key, $value, $ttl);
         }
 
     }
 
-    public function connect(string $host, string $port){
-
-        $this->cache->connect($host,$port);
-
-    }
-
-    public function set(string $key, string $value, string $is_compressed=null, string $ttl=null){
-
-        if($this->cache instanceof \Memcache)
-            $this->cache->set($key,$value,$is_compressed,$ttl);
-        else if($this->cache instanceof \Redis)
-            $this->cache->set($key,$value,$ttl);
-    }
-
-    public function get(string $key){
-
-        return $this->cache->get($key);
-    }
-
-    public function lpush(string $key, string $value){
-
-        if($this->cache instanceof \Memcache)
-            throw new \Exception("method not supported");
-        else if($this->cache instanceof \Redis)
-            $this->cache->lPush($key,$value);
-
+    /**
+     * Insert data to head on redis
+     * 
+     * @param string $key
+     * 
+     * @param string $value
+     * 
+     * @return int
+     */
+    public function lpush(string $key, string $value)
+    {
+        if ( $this->cache instanceof \Memcache ) {
+            throw new \Exception('Method not supported.');
+        }
+        
+        if ( $this->cache instanceof \Redis ) {
+            $this->cache->lPush( $key, $value );
+        }
     }
 
 
 }
-
-$cm=new CacheManager();
-
-$cm->setCache('redis');
-$cm->connect('somehost','121');
-$cm->set('one','1');
-$cm->lpush('two','1');
-$cm->lpush('two','2');
-echo $cm->get('one');
-
-$cm->setCache('memcache');
-$cm->connect('somehost','121');
-$cm->set('one','1');
-$cm->lpush('two','2'); // generates exception
-echo $cm->get('one');
-
-
