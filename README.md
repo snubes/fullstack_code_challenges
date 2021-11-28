@@ -1,5 +1,24 @@
 # fullstack_code_challenges
 
-Identify the code smells in the CacheManager Implementation and rewrite CacheManager following all the best practices you know.
+This implementation was developed with SOLID and design patterns (singleton, factory, adapter).
 
-Please push your code in a different branch. 
+## Requirements
+
+---
+
+* docker
+* docker compose
+* make
+
+## Run
+
+---
+
+It will need config file for connect to cache server. 
+
+First create config file: `make config`
+
+For **run** index.php file: `make run`
+
+For **run tests** use: `make test`
+
