@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  cache_manager:
+    working_dir: /var/www/html
+    container_name: cache_manager
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/var/www/html
+    build: .
+    depends_on:
+      - redis-server
+      - memcached
+  redis-server:
+    image: "redis:alpine"
+    container_name: Redis
+    command: redis-server
+    ports:
+      - "6379:6379"
+  memcached:
+    container_name: memcached
+    image: memcached:latest
+    ports:
+      - "9090:11211"

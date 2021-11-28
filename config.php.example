@@ -1,0 +1,13 @@
+<?php
+return [
+    "cache" => [
+        "redis" => [
+            "host" => 'Redis',
+            "port" => 6379
+        ],
+        "memcached" => [
+            "host" => 'memcached',
+            "port" => 11211
+        ]
+    ]
+];
