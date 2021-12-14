@@ -8,7 +8,7 @@
 
 interface Cache {
     public function connect(string $host, string $port);
-    public function set(string $key, string $value, string $is_compressed=null, string $ttl=null);
+    public function set(string $key, string $value, string $is_compressed = null, string $ttl = null);
     public function get(string $key);
     public function lpush(string $key, string $value);
 }
@@ -17,20 +17,20 @@ class Redis implements Cache {
 
     private $cache;
 
-    public function connect(string $host, string $port) {
-        $this->cache->connect($host, $port);
+    public function connect(string $host, string $port): void {
+        echo "\nSuccessfully connected redis\n";
     }
 
-    public function set(string $key, string $value, string $is_compressed=null, string $ttl=null) {
-        $this->cache->set($key, $value, $ttl);
+    public function set(string $key, string $value, string $is_compressed = null, string $ttl = null): void {
+        $this->cache[$key] = $value;
     }
 
     public function get(string $key) {
-        return $this->cache->get($key);
+        return $this->cache[$key];
     }
 
-    public function lpush(string $key, string $value) {
-        $this->cache->lPush($key,$value);
+    public function lpush(string $key, string $value): void {
+        $this->cache[$key] = $value;
     }
 }
 
@@ -38,27 +38,26 @@ class Memcache implements Cache {
 
     private $cache;
 
-    public function connect(string $host, string $port) {
-        $this->cache->connect($host, $port);
+    public function connect(string $host, string $port): void {
+        echo "\nSuccessfully connected Memcache\n";
     }
 
-    public function set(string $key, string $value, string $is_compressed=null, string $ttl=null) {
-        $this->cache->set($key, $value, $is_compressed, $ttl);
+    public function set(string $key, string $value, string $is_compressed = null, string $ttl = null): void {
+        $this->cache[$key] = $value;
     }
 
-    public function get(string $key){
-        return $this->cache->get($key);
+    public function get(string $key) {
+        return $this->cache[$key];
     }
 
-    public function lpush(string $key, string $value){
-        throw new \Exception("method not supported");
+    public function lpush(string $key, string $value) {
+        throw new \Exception("Method not supported");
     }
 }
 
 class CacheManager
 {
-    public function getCache(string $cachingSystem): Cache
-    {
+    public function getCache(string $cachingSystem): Cache {
         switch ($cachingSystem) {
             case "redis":
                 return new Redis();
@@ -82,9 +81,9 @@ $cache->lpush('two','2');
 echo $cache->get('one');
 
 $cache = $cm->getCache('memcache');
-$cache->connect('somehost','121');
-$cache->set('one','1');
-$cache->lpush('two','2'); // generates exception
+$cache->connect('somehost', '121');
+$cache->set('one', '1');
+$cache->lpush('two', '2'); // generates exception
 echo $cache->get('one');
 
 
