@@ -10,7 +10,25 @@ class CacheManager
 {
     private $cache;
 
-    public function setCache(string $cachingSystem)
+    public function __constructor($chacheObj, $host, $port)
+    { 
+        try{
+            // Creating object inside another class is not good practice. Here we are passign it to constructor.
+
+            if (!is_object($chacheObj)) {
+                throw new \Exception("first parameter must be an object.");
+            }
+            $this->cache = $chacheObj;
+
+            // As connect method is common for both Redis as well as Memcache
+
+            $this->cache->connect($host,$port);
+        }catch(Exception $e){
+            echo  $e->getMessage();
+        }
+    }
+    
+    /*public function setCache(string $cachingSystem)
     {
 
         switch ($cachingSystem){
@@ -25,6 +43,7 @@ class CacheManager
                 throw new \Exception("Cache Manager Not Found");
 
         }
+        
 
     }
 
@@ -33,7 +52,7 @@ class CacheManager
         $this->cache->connect($host,$port);
 
     }
-
+    */
     public function set(string $key, string $value, string $is_compressed=null, string $ttl=null){
 
         if($this->cache instanceof \Memcache)
@@ -59,6 +78,26 @@ class CacheManager
 
 }
 
+try{
+    $redisObj = new Redis();
+    // Here we are passing Object from oustide of CacheManager along with host and port.
+    $cm=new CacheManager($redisObj, 'somehost','121');
+    $cm->set('one','1');
+    $cm->lpush('two','1');
+    $cm->lpush('two','2');
+    echo $cm->get('one');
+
+    $memObj = new Memcache();
+
+    $cm1=new CacheManager($memObj, 'somehost','121');
+    $cm1->set('one','1');
+    $cm1->lpush('two','2');
+    echo $cm1->get('one');
+    
+}catch(Exception $e){
+    echo  $e->getMessage();
+}
+/*
 $cm=new CacheManager();
 
 $cm->setCache('redis');
@@ -73,5 +112,6 @@ $cm->connect('somehost','121');
 $cm->set('one','1');
 $cm->lpush('two','2'); // generates exception
 echo $cm->get('one');
+*/
 
-
+?>
