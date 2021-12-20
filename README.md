@@ -1,5 +1,3 @@
 # fullstack_code_challenges
 
-Identify the code smells in the CacheManager Implementation and rewrite CacheManager following all the best practices you know.
-
-Please push your code in a different branch. 
+I did rewrite of the cache manager with necessary components, without a project setup or something like that, because I tried to focus on exact task and ignore everything else. This is a reusable structure.
