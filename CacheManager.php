@@ -1,77 +1,89 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: isnain
- * Date: 09.08.21
- * Time: 10:14
- */
+
+interface CacheInterface
+{
+    public function set(string $key, string $value);
+
+    public function get(string $key);
+}
+
+interface PushableCacheInterface
+{
+    public function lpush(string $key, string $value);
+}
+
+class Memcache implements CacheInterface
+{
+    public function set(string $key, string $value)
+    {
+        // TODO: Implement set() method.
+    }
+
+    public function get(string $key)
+    {
+        // TODO: Implement get() method.
+    }
+
+}
+
+class Redis implements CacheInterface, PushableCacheInterface
+{
+    public function set(string $key, string $value)
+    {
+        // TODO: Implement set() method.
+    }
+
+    public function get(string $key)
+    {
+        // TODO: Implement get() method.
+    }
+
+    public function lpush(string $key, string $value)
+    {
+        // TODO: Implement lpush() method.
+    }
+
+}
 
 class CacheManager
 {
-    private $cache;
+    private CacheInterface $cache;
 
-    public function setCache(string $cachingSystem)
+    public function __construct(CacheInterface $cache)
+    {
+        $this->cache = $cache;
+    }
+
+
+    public function connect(string $host, string $port)
     {
 
-        switch ($cachingSystem){
-
-            case "redis":
-                $this->cache=new \Redis();
-                break;
-            case "memcache":
-                $this->cache=new \Memcache();
-                break;
-            default:
-                throw new \Exception("Cache Manager Not Found");
-
-        }
+        $this->cache->connect($host, $port);
 
     }
 
-    public function connect(string $host, string $port){
+    public function set(string $key, string $value, string $is_compressed = null, string $ttl = null)
+    {
 
-        $this->cache->connect($host,$port);
-
+        if ($this->cache instanceof \Memcache)
+            $this->cache->set($key, $value, $is_compressed, $ttl);
+        else if ($this->cache instanceof \Redis)
+            $this->cache->set($key, $value, $ttl);
     }
 
-    public function set(string $key, string $value, string $is_compressed=null, string $ttl=null){
-
-        if($this->cache instanceof \Memcache)
-            $this->cache->set($key,$value,$is_compressed,$ttl);
-        else if($this->cache instanceof \Redis)
-            $this->cache->set($key,$value,$ttl);
-    }
-
-    public function get(string $key){
+    public function get(string $key)
+    {
 
         return $this->cache->get($key);
     }
 
-    public function lpush(string $key, string $value){
-
-        if($this->cache instanceof \Memcache)
+    public function lpush(string $key, string $value)
+    {
+        if ($this->cache instanceof PushableCacheInterface) {
+            $this->cache->lPush($key, $value);
+        } else {
             throw new \Exception("method not supported");
-        else if($this->cache instanceof \Redis)
-            $this->cache->lPush($key,$value);
-
+        }
     }
 
-
 }
-
-$cm=new CacheManager();
-
-$cm->setCache('redis');
-$cm->connect('somehost','121');
-$cm->set('one','1');
-$cm->lpush('two','1');
-$cm->lpush('two','2');
-echo $cm->get('one');
-
-$cm->setCache('memcache');
-$cm->connect('somehost','121');
-$cm->set('one','1');
-$cm->lpush('two','2'); // generates exception
-echo $cm->get('one');
-
-
