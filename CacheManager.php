@@ -8,70 +8,55 @@
 
 class CacheManager
 {
-    private $cache;
+    /**
+     * @var Context
+     */
+    private Context $cache;
 
     public function setCache(string $cachingSystem)
     {
-
-        switch ($cachingSystem){
-
-            case "redis":
-                $this->cache=new \Redis();
-                break;
-            case "memcache":
-                $this->cache=new \Memcache();
-                break;
-            default:
-                throw new \Exception("Cache Manager Not Found");
-
-        }
+        $this->cache = match ($cachingSystem) {
+            'redis' => new Context(new RedisStrategy()),
+            'memcache' => new Context(new MemcacheStrategy()),
+            default => throw new \Exception("Cache Manager Not Found"),
+        };
 
     }
 
-    public function connect(string $host, string $port){
-
-        $this->cache->connect($host,$port);
-
+    public function set(string $key, string $value)
+    {
+        $this->cache->set($key, $value);
     }
 
-    public function set(string $key, string $value, string $is_compressed=null, string $ttl=null){
-
-        if($this->cache instanceof \Memcache)
-            $this->cache->set($key,$value,$is_compressed,$ttl);
-        else if($this->cache instanceof \Redis)
-            $this->cache->set($key,$value,$ttl);
-    }
-
-    public function get(string $key){
-
+    public function get(string $key): array
+    {
         return $this->cache->get($key);
     }
 
-    public function lpush(string $key, string $value){
+    /**
+     * @throws Exception
+     */
+    public function lpush(string $key, string $value): bool|int
+    {
+        if ($this->cache instanceof LpushStrategy) {
+            return $this->cache->lPush($key, $value);
+        }
 
-        if($this->cache instanceof \Memcache)
-            throw new \Exception("method not supported");
-        else if($this->cache instanceof \Redis)
-            $this->cache->lPush($key,$value);
-
+        throw new \Exception("method not supported");
     }
-
-
 }
 
-$cm=new CacheManager();
+$cm = new CacheManager();
 
 $cm->setCache('redis');
-$cm->connect('somehost','121');
-$cm->set('one','1');
-$cm->lpush('two','1');
-$cm->lpush('two','2');
+$cm->set('one', '1');
+$cm->lpush('two', '1');
+$cm->lpush('two', '2');
 echo $cm->get('one');
 
 $cm->setCache('memcache');
-$cm->connect('somehost','121');
-$cm->set('one','1');
-$cm->lpush('two','2'); // generates exception
+$cm->set('one', '1');
+$cm->lpush('two', '2'); // generates exception
 echo $cm->get('one');
 
 
