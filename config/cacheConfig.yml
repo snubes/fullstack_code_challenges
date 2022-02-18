@@ -1,0 +1,9 @@
+cache:
+  ttl_default: 500
+  memcache:
+    host: somehost
+    port: 1000
+  redis:
+    host: somehost
+    port: 2000
+    ttl: 400

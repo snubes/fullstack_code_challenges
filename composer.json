@@ -1,0 +1,25 @@
+{
+  "name": "ilkin/snubes",
+  "description": "Coding Challenge",
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "Ilkin\\Snubes\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Ilkin Alibayli",
+      "email": "ilkinalibeyli+github@gmail.com"
+    }
+  ],
+  "require": {
+    "symfony/yaml": "^5.3",
+    "ext-zlib": "*",
+    "ext-redis": "*",
+    "ext-memcache": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.5.13"
+  }
+}
