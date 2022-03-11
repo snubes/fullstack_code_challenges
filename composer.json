@@ -1,0 +1,15 @@
+{
+    "name": "durjoi/fullstack_code_challenges",
+    "autoload": {
+        "psr-4": {
+            "Snubes\\Cache\\": "cache/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Mehedi Hassan Durjoi",
+            "email": "m.h.durjoi@gmail.com"
+        }
+    ],
+    "require": {}
+}
