@@ -1,0 +1,11 @@
+{
+    "name": "s.r/cahchemanager",
+    "description": "this is cachemanger package for redis and memcache",
+    "autoload": {
+        "psr-4": {
+            "CacheManager\\Src\\CHClass\\": "src/Class/",
+            "CacheManager\\Src\\CHInterface\\": "src/Interface/"
+        }
+    },
+    "require": {}
+}
