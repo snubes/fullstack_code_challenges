@@ -36,7 +36,7 @@ class RedisCacheManager extends Cache{
 	/**
  	*  implement lpush feacher of redis  
  	*/
-    public function lpush(string $key, string $value){
+    public function lpush(string $key, string $value): void{
 
 		$this->cache->lPush($key,$value);
 
