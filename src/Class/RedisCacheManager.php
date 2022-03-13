@@ -32,14 +32,14 @@ class RedisCacheManager extends Cache{
 	public function set(string $key, string $value, $ttl = null): void{
 
 		$this->cache->set($key,$value,$ttl);
-    }
+    	}
 	/**
  	*  implement lpush feacher of redis  
  	*/
-    public function lpush(string $key, string $value): void{
+    	public function lpush(string $key, string $value): void{
 
 		$this->cache->lPush($key,$value);
 
-    }
+    	}
 
 }
