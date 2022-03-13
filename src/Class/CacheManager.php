@@ -13,16 +13,16 @@ class CacheManager{
      */
 	public function getInstance(string $cachingSystem): CacheManagerInterface{
         
-        switch ($cachingSystem){
+		switch ($cachingSystem){
 
-            case "redis":
-                return new RedisCacheManager;
-            case "memcache":
-                return new MemcacheCacheManager;
-            default:
-                throw new \Exception("Cache Manager Not Found");
+		    case "redis":
+			return new RedisCacheManager;
+		    case "memcache":
+			return new MemcacheCacheManager;
+		    default:
+			throw new \Exception("Cache Manager Not Found");
 
-        }
+		}
 
 	}
 	
