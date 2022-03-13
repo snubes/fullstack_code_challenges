@@ -1,5 +1,7 @@
 # fullstack_code_challenges
 
-Identify the code smells in the CacheManager Implementation and rewrite CacheManager following all the best practices you know.
+Please execute the following steps 
 
-Please push your code in a different branch. 
+Run composer install
+To run the tests please execute ./vendor/bin/phpunit tests from your root folder.
+Set the values of host and port based on your configuration
