@@ -1,17 +1,19 @@
 <?php
 // Redis
 $cache=new RedisCache();
-$connect=new ConnectClass();
-$connect->connectCache('somehost','121', $cache->getCacheValue());
+$connectRedis=new ConnectClass();
+$connectRedis->connectCache('somehost','121', $cache->getCacheValue());
 $cache->setKey('one','1');
 $cache->lpushKey('two','1');
 $cache->lpushKey('two','2');
-$get = new GetClass();
-echo $get->getKey('one', $cache->getCacheValue());
+$getRedis = new GetClass();
+echo $getRedis->getKey('one', $cache->getCacheValue());
 
 //Memcache
 $cache=new MemCache();
-$connect=new ConnectClass();
+$connectMemcache=new ConnectClass();
+$connectMemcache->connectCache('somehost','121', $cache->getCacheValue());
 $cache->setKey('one','1');
 $cache->lpushKey('two','2');
-echo $get->getKey('one', $cache->getCacheValue());
+$getMemcache = new GetClass();
+echo $getMemcache->getKey('one', $cache->getCacheValue());
