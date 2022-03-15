@@ -10,9 +10,7 @@ include_once 'CacheManagerInterface.php';
 
 abstract class CacheManager implements CacheManagerInterface
 {
-    /**
-     * @var Redis
-     */
+   
     protected $cache;
 
 
