@@ -1,0 +1,9 @@
+{
+    "name": "acer/snubes-test",
+    "autoload": {
+        "psr-4": {
+            "Acer\\fullstack_code_challenges\\": "src/"
+        }
+    },
+    "require": {}
+}
