@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server
+    volumes: 
+      - redis-cache:/data
+
+  memcached:
+    container_name: memcached
+    image: memcached:latest
+    ports:
+        - "11211:11211"
+    volumes: 
+      - memcached-cache:/data
+
+volumes:
+  redis-cache:
+    driver: local
+  memcached-cache:
+    driver: local
