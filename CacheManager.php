@@ -1,77 +1,129 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: isnain
- * Date: 09.08.21
- * Time: 10:14
- */
 
-class CacheManager
+interface lPushSupport
 {
+    public function lpush(string $key, string $value);
+}
+
+abstract class Cache
+{   
+    private string $host;
+    private string $port;
     private $cache;
 
-    public function setCache(string $cachingSystem)
+    public function setHost(string $host)
     {
+        $this->host = $host;
+    }
 
-        switch ($cachingSystem){
+    public function setPort(string $port)
+    {
+        $this->port = $port;
+    }
 
-            case "redis":
-                $this->cache=new \Redis();
-                break;
-            case "memcache":
-                $this->cache=new \Memcache();
-                break;
-            default:
-                throw new \Exception("Cache Manager Not Found");
-
+    public function connect(){
+        if (!$this->$host || $this->$port) {
+            throw new Exception('Please provide connection information.');
         }
-
-    }
-
-    public function connect(string $host, string $port){
-
-        $this->cache->connect($host,$port);
-
-    }
-
-    public function set(string $key, string $value, string $is_compressed=null, string $ttl=null){
-
-        if($this->cache instanceof \Memcache)
-            $this->cache->set($key,$value,$is_compressed,$ttl);
-        else if($this->cache instanceof \Redis)
-            $this->cache->set($key,$value,$ttl);
-    }
+        $this->cache->connect($this->$host , $this->$port); 
+    }  
 
     public function get(string $key){
-
         return $this->cache->get($key);
     }
 
-    public function lpush(string $key, string $value){
+    abstract public function set(...$args);
+    
+    abstract public function setCache();
+};
 
-        if($this->cache instanceof \Memcache)
-            throw new \Exception("method not supported");
-        else if($this->cache instanceof \Redis)
-            $this->cache->lPush($key,$value);
 
+
+class MemcacheCache extends Cache 
+{
+    public function setCache()
+    {
+        $this->cache = new \Memcache();
+    }
+    
+    public function set(...$args){
+        list($key,$value,$ttl,$is_compressed) = $args;
+        $this->cache->set($key,$value,$is_compressed,$ttl);
+    }    
+}
+class RedisCache extends Cache implements lPushSupport
+{
+    
+    public function setCache()
+    {
+        $this->cache = new \Redis();
     }
 
+    public function set(...$args){
+        list($key,$value,$ttl) = $args;
+        $this->cache->set($key,$value,$ttl);
+    }    
+
+    public function lpush(string $key, string $value){
+            $this->cache->lPush($key,$value);
+    }
 
 }
 
-$cm=new CacheManager();
 
-$cm->setCache('redis');
-$cm->connect('somehost','121');
-$cm->set('one','1');
-$cm->lpush('two','1');
-$cm->lpush('two','2');
+// This is code to show how it can be used in a class
+class CacheManager {
+
+    private Cache $cache;
+
+    public function __construct(Cache $cache) {
+      $this->cache = $cache;
+    }
+    /**
+   * Retrieve cached data by its key
+   */
+  public function retrieve($key) {
+    return $this->catch->get($key);
+  }
+    /**
+   * Store cached data
+   */
+  function store(...$args){ 
+        $params = func_get_args();
+        $this->catch->set($params);
+  } 
+}
+
+
+
+$redisCache=new RedisCache();
+$redisCache->setHost('localhost');
+$redisCache->setPort('6379');
+$redisCache->connect();
+$redisCache->set('one','1');
+$redisCache->lpush('two','1');
+$redisCache->lpush('two','2');
+echo $redisCache->get('one');
+
+
+$memcache=new MemcacheCache();
+$memcache->setHost('127.0.0.1');
+$memcache->setPort('11211');
+$redisCache->connect();
+$memcache->set('one','1');
 echo $cm->get('one');
 
-$cm->setCache('memcache');
-$cm->connect('somehost','121');
-$cm->set('one','1');
-$cm->lpush('two','2'); // generates exception
-echo $cm->get('one');
+/*
+*This method will not be available on MemcacheCache as it does not implement lPushSupport interface
+*/
+//$memcache->lpush('two','2'); 
 
+//using CacheManager
 
+$rcm=new CacheManager($redisCache);
+$rcm->store('one','1');
+echo $rcm->retrieve('one');
+
+$mcm=new CacheManager($memcache);
+$mcm->store('one','1');
+echo $mcm->retrieve('one');
