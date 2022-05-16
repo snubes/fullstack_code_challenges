@@ -1,77 +1,71 @@
 <?php
+
+declare(strict_types = 1);
+
 /**
  * Created by PhpStorm.
  * User: isnain
  * Date: 09.08.21
  * Time: 10:14
+ *
+ * PHP v.7.2+
  */
-
-class CacheManager
+class CacheManager implements CacheManagerInterface
 {
-    private $cache;
+    private CacheManagerInterface $cacheConnector;
 
-    public function setCache(string $cachingSystem)
+    public function __construct (string $cacheConnector)
     {
-
-        switch ($cachingSystem){
-
-            case "redis":
-                $this->cache=new \Redis();
-                break;
-            case "memcache":
-                $this->cache=new \Memcache();
-                break;
-            default:
-                throw new \Exception("Cache Manager Not Found");
-
-        }
-
+        $this->cacheConnector = CacheConnectionFactory::connect($cacheConnector);
     }
 
-    public function connect(string $host, string $port){
+    public function connect (string $host, string $port) : CacheManagerInterface
+    {
+        $this->cacheConnector->connect($host, $port);
 
-        $this->cache->connect($host,$port);
-
+        return $this;
     }
 
-    public function set(string $key, string $value, string $is_compressed=null, string $ttl=null){
+    public function set (string $key, string $value, string $is_compressed = null, string $ttl = null) : CacheManagerInterface
+    {
+        $this->cacheConnector->set($key, $value, $is_compressed, $ttl);
 
-        if($this->cache instanceof \Memcache)
-            $this->cache->set($key,$value,$is_compressed,$ttl);
-        else if($this->cache instanceof \Redis)
-            $this->cache->set($key,$value,$ttl);
+        return $this;
     }
 
-    public function get(string $key){
-
-        return $this->cache->get($key);
+    public function get (string $key) : string
+    {
+        return $this->cacheConnector->get($key);
     }
 
-    public function lpush(string $key, string $value){
+    public function lpush (string $key, string $value) : CacheManagerInterface
+    {
+        $this->cacheConnector->lpush($key, $value);
 
-        if($this->cache instanceof \Memcache)
-            throw new \Exception("method not supported");
-        else if($this->cache instanceof \Redis)
-            $this->cache->lPush($key,$value);
-
+        return $this;
     }
-
-
 }
 
-$cm=new CacheManager();
+try
+{
+    // if you want to use connection factory then following line
+    $redisCache = new CacheManager(CacheConnectionFactory::REDIS);
 
-$cm->setCache('redis');
-$cm->connect('somehost','121');
-$cm->set('one','1');
-$cm->lpush('two','1');
-$cm->lpush('two','2');
-echo $cm->get('one');
+    $redisCache->connect('somehost', '121')
+        ->set('one', '1')
+        ->lpush('two', '1')
+        ->lpush('two', '2');
 
-$cm->setCache('memcache');
-$cm->connect('somehost','121');
-$cm->set('one','1');
-$cm->lpush('two','2'); // generates exception
-echo $cm->get('one');
+    echo $redisCache->get('one');
 
+    $memCache = new CacheManager(CacheConnectionFactory::MEMCACHED);
 
+    $memCache->connect('somehost', '121')
+        ->set('one', '1')
+        ->lpush('two', '2'); // generates exception
+    echo $memCache->get('one');
+}
+catch (Exception $e)
+{
+    //TODO write error message to log $e->getMessage()
+}
